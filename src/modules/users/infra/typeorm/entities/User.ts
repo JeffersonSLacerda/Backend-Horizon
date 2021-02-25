@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 import Profile from './Profile';
+import Comments from './Comment';
 
 @Entity('users')
 class User {
@@ -36,6 +38,9 @@ class User {
   @ManyToOne(() => Profile, profile => profile.type, { eager: true })
   @JoinColumn({ name: 'profile_id' })
   profile: Profile;
+
+  @OneToMany(() => Comments, comment => comment.text, { eager: true })
+  comment: Comments[];
 
   @CreateDateColumn()
   created_at: Date;
