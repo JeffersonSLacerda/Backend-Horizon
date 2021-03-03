@@ -1,16 +1,16 @@
+import Locals from '@modules/locals/infra/typeorm/entities/Local';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
-
 import Profile from './Profile';
-import Comments from './Comment';
+
+import Comment from './Comment';
 
 @Entity('users')
 class User {
@@ -35,12 +35,21 @@ class User {
   @Column()
   state: string;
 
-  @ManyToOne(() => Profile, profile => profile.type, { eager: true })
-  @JoinColumn({ name: 'profile_id' })
+  @OneToMany(() => Locals, local => local.user)
+  locals: Locals[];
+
+  @ManyToOne(() => Profile, profile => profile.type, {
+    eager: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
   profile: Profile;
 
-  @OneToMany(() => Comments, comment => comment.text, { eager: true })
-  comment: Comments[];
+  @OneToMany(() => Comment, comment => comment.user)
+  comments: Comment[];
+
+  @Column('boolean')
+  isAtivo: Boolean;
 
   @CreateDateColumn()
   created_at: Date;

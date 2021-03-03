@@ -4,21 +4,31 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Timestamp,
   ManyToOne,
 } from 'typeorm';
 import Local from './Local';
 
-@Entity('pictures')
-class Picture {
+@Entity('operations')
+class Operations {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
+  day: string;
 
-  @ManyToOne(() => Local, local => local.picture, {
-    onDelete: 'SET NULL',
+  @Column('time without time zone')
+  openTime: Timestamp;
+
+  @Column('time without time zone')
+  closeTime: Timestamp;
+
+  @Column('money')
+  price: number;
+
+  @ManyToOne(() => Local, local => local.id, {
     onUpdate: 'CASCADE',
+    onDelete: 'SET NULL',
   })
   local: Local;
 
@@ -29,4 +39,4 @@ class Picture {
   updated_at: Date;
 }
 
-export default Picture;
+export default Operations;

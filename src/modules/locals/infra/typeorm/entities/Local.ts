@@ -1,31 +1,24 @@
+import User from '@modules/users/infra/typeorm/entities/User';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Timestamp,
-  ManyToMany,
-  JoinTable,
+  ManyToOne,
   OneToMany,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
-
 import Comments from '@modules/users/infra/typeorm/entities/Comment';
+import Operations from './Operations';
+import Picture from './Pictures';
 import Tags from './Tags';
-import Pictures from './Pictures';
 
-export enum daysOfTheWeek {
-  Sunday = 'sun',
-  Monday = 'mon',
-  Tuesday = 'tue',
-  Wendnesday = 'wen',
-  Thuesday = 'thu',
-  Friday = 'fri',
-  Saturday = 'sat',
-}
+type status = 'ok' | 'waiting' | 'refused';
 
 @Entity('locals')
-class User {
+class Locals {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,17 +28,8 @@ class User {
   @Column()
   state: string;
 
-  @Column('time without time zone')
-  openTime: Timestamp;
-
-  @Column('time without time zone')
-  closeTime: Timestamp;
-
-  @Column('enum')
-  openDays: daysOfTheWeek;
-
-  @Column('money')
-  price: number;
+  @Column()
+  name: string;
 
   @Column('text')
   description: string;
@@ -62,17 +46,26 @@ class User {
   @Column()
   district: string;
 
+  @ManyToOne(() => User, locals => locals.locals, {
+    eager: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  user: User;
+
   @Column('decimal')
   rating: number;
 
-  @ManyToMany(() => Tags, tags => tags.name, { eager: true })
+  @ManyToMany(() => Tags, { eager: true })
   @JoinTable()
   tags: Tags[];
 
-  @OneToMany(() => Pictures, pictures => pictures.local, { eager: true })
-  picture: Pictures[];
+  @OneToMany(() => Picture, pictures => pictures.local, {
+    eager: true,
+  })
+  picture: Picture[];
 
-  @ManyToMany(() => Comments, comments => comments.id, { eager: true })
+  @ManyToMany(() => Comments, { eager: true })
   @JoinTable()
   comments: Comments[];
 
@@ -82,6 +75,12 @@ class User {
   @Column()
   showName: boolean;
 
+  @OneToMany(() => Operations, operations => operations.id, { eager: true })
+  operations: Operations[];
+
+  @Column()
+  staus: status;
+
   @CreateDateColumn()
   created_at: Date;
 
@@ -89,4 +88,4 @@ class User {
   updated_at: Date;
 }
 
-export default User;
+export default Locals;

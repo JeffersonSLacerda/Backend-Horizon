@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import User from './User';
 
 @Entity('profiles')
 class Profile {
@@ -13,6 +15,9 @@ class Profile {
 
   @Column()
   type: string;
+
+  @OneToMany(() => User, profile => profile.profile)
+  users: User[];
 
   @CreateDateColumn()
   created_at: Date;
