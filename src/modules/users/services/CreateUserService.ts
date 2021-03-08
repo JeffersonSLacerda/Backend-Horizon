@@ -12,6 +12,7 @@ interface Request {
   city: string;
   state: string;
   profile: 'client' | 'admin';
+  isAtivo: boolean;
 }
 
 class CreateUserService {
@@ -23,6 +24,7 @@ class CreateUserService {
     city,
     state,
     profile,
+    isAtivo,
   }: Request): Promise<User> {
     const userRepository = getRepository(User);
     const profileRepository = getRepository(Profile);
@@ -59,6 +61,7 @@ class CreateUserService {
       city,
       state,
       profile: userProfile,
+      isAtivo,
     });
 
     await userRepository.save(user);

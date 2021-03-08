@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   Timestamp,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import Local from './Local';
 
@@ -30,6 +31,7 @@ class Operations {
     onUpdate: 'CASCADE',
     onDelete: 'SET NULL',
   })
+  @JoinColumn()
   local: Local;
 
   @CreateDateColumn()

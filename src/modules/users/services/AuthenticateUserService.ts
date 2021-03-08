@@ -30,6 +30,10 @@ class AuthenticateUserService {
       throw new Error('Incorrect email/password combination');
     }
 
+    if (!user.isAtivo) {
+      throw new Error('Access denied. User not allowed.');
+    }
+
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
@@ -38,7 +42,7 @@ class AuthenticateUserService {
 
     const { secret, expiresIn } = authConfig.jwt;
 
-    const token = sign({}, secret, {
+    const token = sign({ profile: user.profile.type }, secret, {
       subject: user.id,
       expiresIn,
     });

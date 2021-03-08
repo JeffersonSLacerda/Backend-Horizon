@@ -8,6 +8,6 @@ const routes = Router();
 
 routes.use('/users', usersRouter);
 routes.use('/sessions', sessionsRouter);
-routes.use('/routes', localsRouter);
+routes.use('/locals', localsRouter);
 
 export default routes;

@@ -1,4 +1,3 @@
-import User from '@modules/users/infra/typeorm/entities/User';
 import {
   Entity,
   Column,
@@ -9,7 +8,10 @@ import {
   OneToMany,
   JoinTable,
   ManyToMany,
+  JoinColumn,
 } from 'typeorm';
+
+import User from '@modules/users/infra/typeorm/entities/User';
 import Comments from '@modules/users/infra/typeorm/entities/Comment';
 import Operations from './Operations';
 import Picture from './Pictures';
@@ -46,11 +48,12 @@ class Locals {
   @Column()
   district: string;
 
-  @ManyToOne(() => User, locals => locals.locals, {
+  @ManyToOne(() => User, local => local.locals, {
     eager: true,
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
+  @JoinColumn()
   user: User;
 
   @Column('decimal')
@@ -63,11 +66,12 @@ class Locals {
   @OneToMany(() => Picture, pictures => pictures.local, {
     eager: true,
   })
+  @JoinColumn()
   picture: Picture[];
 
   @ManyToMany(() => Comments, { eager: true })
   @JoinTable()
-  comments: Comments[];
+  comments?: Comments[];
 
   @Column()
   rootOrNutella: boolean;
@@ -75,11 +79,15 @@ class Locals {
   @Column()
   showName: boolean;
 
-  @OneToMany(() => Operations, operations => operations.id, { eager: true })
+  @OneToMany(() => Operations, operations => operations.local, { eager: true })
+  @JoinColumn()
   operations: Operations[];
 
   @Column()
-  staus: status;
+  status: status;
+
+  @Column()
+  link?: string;
 
   @CreateDateColumn()
   created_at: Date;

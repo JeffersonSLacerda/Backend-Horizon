@@ -1,34 +1,24 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 import { getRepository } from 'typeorm';
 
+import User from '@modules/users/infra/typeorm/entities/User';
 import Locals from '../infra/typeorm/entities/Local';
-import Operations from '../infra/typeorm/entities/Operations';
-import Pictures from '../infra/typeorm/entities/Pictures';
-import Tags from '../infra/typeorm/entities/Tags';
 
 interface Request {
   city: string;
   state: string;
   name: string;
-  tag: string[];
-  description: string;
   cep: string;
   street: string;
   number: string;
   district: string;
-  rating: number;
   link?: string;
   rootOrNutella: boolean;
-  showName: boolean;
   status: 'ok' | 'waiting' | 'refused';
-  days: 'sun' | 'mon' | 'tue' | 'wen' | 'thu' | 'fri' | 'sat';
-  openTime: string;
-  closeTime: string;
-  price?: number;
-  pictures: string[];
-}
-
-interface Tag {
-  name: string;
+  userId: string;
+  profile: string;
+  showName: boolean;
 }
 
 class CreateLocalService {
@@ -36,30 +26,26 @@ class CreateLocalService {
     city,
     state,
     name,
-    tags,
-    description,
     cep,
     street,
     number,
     district,
-    rating,
     link,
     rootOrNutella,
+    userId,
+    profile,
     showName,
-    status,
-    days,
-    openTime,
-    closeTime,
-    price,
-    pictures,
-  }: Request): Promise<void> {
+  }: Request): Promise<Locals> {
     const localsRepository = getRepository(Locals);
+    const userRepository = getRepository(User);
 
-    const operationsRepository = getRepository(Operations);
+    const user = await userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
 
-    const picturesRepository = getRepository(Pictures);
-
-    const tagsRepository = getRepository(Tags);
+    const status = profile === 'admin' ? 'ok' : 'waiting';
 
     const checkLocalsExistAndAceppted = await localsRepository.findOne({
       where: { name, status: 'ok' },
@@ -70,19 +56,31 @@ class CreateLocalService {
     }
 
     const checkLocalsExistAndWaiting = await localsRepository.findOne({
-      where: { name, staus: 'waiting' },
+      where: { name, status: 'waiting' },
     });
 
     if (checkLocalsExistAndWaiting) {
       throw new Error('Local ja cadastrado e esperando aprovação!');
     }
 
-    // percorrer o array de tags,
-    // salvar todas no banco no banco
-
-    const localTags = tags.forEach((tag: Tag) => {
-      tagsRepository.create(tag);
+    const local = localsRepository.create({
+      city,
+      state,
+      name,
+      cep,
+      street,
+      number,
+      district,
+      rootOrNutella,
+      status,
+      link,
+      user,
+      showName,
     });
+
+    await localsRepository.save(local);
+
+    return local;
   }
 }
 
