@@ -15,9 +15,23 @@ sessionsRouter.post('/', async (request, response) => {
       password,
     });
 
-    user.password = 'password';
+    const userWithoutPassword = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      city: user.city,
+      state: user.state,
+      isAtivo: user.isAtivo,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      profile: {
+        id: user.profile.id,
+        type: user.profile.type,
+      },
+    };
 
-    return response.json({ user, token });
+    return response.json({ userWithoutPassword, token });
   } catch (err) {
     return response.status(400).json({ error: err.message });
   }
