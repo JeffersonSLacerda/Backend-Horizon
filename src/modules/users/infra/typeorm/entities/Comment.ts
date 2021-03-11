@@ -11,7 +11,7 @@ import {
 import User from './User';
 
 @Entity('comments')
-class Profile {
+class Comments {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,4 +35,4 @@ class Profile {
   updated_at: Date;
 }
 
-export default Profile;
+export default Comments;
