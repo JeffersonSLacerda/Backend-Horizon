@@ -43,9 +43,6 @@ class CreateTagService {
       const newTag = tagRepository.create({
         name,
       });
-      if (local?.tags) {
-        local?.tags = tag;
-      }
 
       await tagRepository.save(newTag);
     });
