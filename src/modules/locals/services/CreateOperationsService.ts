@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import { startOfDay, endOfDay, getHours } from 'date-fns';
 
-import User from '@modules/users/infra/typeorm/entities/User';
+import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
 import Operations from '../infra/typeorm/entities/Operations';
 import Locals from '../infra/typeorm/entities/Local';
 
@@ -27,11 +27,11 @@ class CreateOperationsService {
   }: Request) {
     const operationsRepository = getRepository(Operations);
     const localsRepository = getRepository(Locals);
-    const userRepository = getRepository(User);
+    const userRepository = new UsersRepository();
 
     const local = await localsRepository.findOne({ where: { id: localId } });
 
-    const validUser = await userRepository.findOne(userId);
+    const validUser = await userRepository.findById(userId);
 
     if (!validUser) {
       throw new Error('Only autenhicated user can change Locals Pictures');

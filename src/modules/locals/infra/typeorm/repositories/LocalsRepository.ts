@@ -11,6 +11,24 @@ class LocalsRepository implements ILocalsRepository {
     this.ormRepository = getRepository(Locals);
   }
 
+  public async findById(id: string): Promise<Locals | undefined> {
+    const local = await this.ormRepository.findOne(id);
+
+    return local;
+  }
+
+  public async checkState(name: string): Promise<string | undefined> {
+    const local = await this.ormRepository.findOne({ where: { name } });
+
+    if (local?.status === 'ok') return 'Local já cadastrado';
+
+    if (local?.status === 'waiting') {
+      return 'Local já cadastrado e aguadando aprovação';
+    }
+
+    return undefined;
+  }
+
   public async create({
     city,
     state,
@@ -21,11 +39,10 @@ class LocalsRepository implements ILocalsRepository {
     district,
     link,
     rootOrNutella,
-    userId,
-    profile,
+    user,
     showName,
   }: ICreateLocalDTO): Promise<Locals> {
-    const locals = this.ormRepository.create({
+    const local = this.ormRepository.create({
       city,
       state,
       name,
@@ -38,6 +55,8 @@ class LocalsRepository implements ILocalsRepository {
       user,
       showName,
     });
+
+    return local;
   }
 }
 

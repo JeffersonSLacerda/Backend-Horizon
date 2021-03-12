@@ -11,9 +11,7 @@ export default interface ICreateLocalDTO {
   district: string;
   link?: string;
   rootOrNutella: boolean;
-  status: 'ok' | 'waiting' | 'refused';
-  userId: string;
-  profile: string;
+  status: string;
   showName: boolean;
-  User: User;
+  user: User;
 }

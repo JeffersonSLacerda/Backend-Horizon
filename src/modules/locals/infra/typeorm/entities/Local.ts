@@ -59,7 +59,7 @@ class Locals {
   @Column('decimal')
   rating: number;
 
-  @ManyToMany(() => Tags, { eager: true })
+  @ManyToMany(() => Tags, { eager: true, cascade: true })
   @JoinTable()
   tags: Tags[];
 

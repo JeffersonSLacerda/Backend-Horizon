@@ -1,9 +1,9 @@
 /* eslint-disable function-paren-newline */
 /* eslint-disable implicit-arrow-linebreak */
-import { getRepository } from 'typeorm';
-
 import User from '@modules/users/infra/typeorm/entities/User';
+import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
 import Locals from '../infra/typeorm/entities/Local';
+import LocalsRepository from '../infra/typeorm/repositories/LocalsRepository';
 
 interface Request {
   city: string;
@@ -17,7 +17,6 @@ interface Request {
   rootOrNutella: boolean;
   status: 'ok' | 'waiting' | 'refused';
   userId: string;
-  profile: string;
   showName: boolean;
 }
 
@@ -31,39 +30,31 @@ class CreateLocalService {
     number,
     district,
     link,
+    status,
     rootOrNutella,
     userId,
-    profile,
     showName,
   }: Request): Promise<Locals> {
-    const localsRepository = getRepository(Locals);
-    const userRepository = getRepository(User);
+    const localsRepository = new LocalsRepository();
+    const usersRepository = new UsersRepository();
 
-    const user = await userRepository.findOne({
-      where: {
-        id: userId,
-      },
-    });
+    const situation = await localsRepository.checkState(name);
 
-    const status = profile === 'admin' ? 'ok' : 'waiting';
-
-    const checkLocalsExistAndAceppted = await localsRepository.findOne({
-      where: { name, status: 'ok' },
-    });
-
-    if (checkLocalsExistAndAceppted) {
-      throw new Error('Local ja cadastrado!');
+    if (situation) {
+      throw new Error(situation);
     }
 
-    const checkLocalsExistAndWaiting = await localsRepository.findOne({
-      where: { name, status: 'waiting' },
-    });
+    const findUser = await usersRepository.findById(userId);
 
-    if (checkLocalsExistAndWaiting) {
-      throw new Error('Local ja cadastrado e esperando aprovação!');
+    if (!findUser) {
+      throw new Error('User not exist');
     }
 
-    const local = localsRepository.create({
+    if (findUser.profile.type !== 'admin') {
+      throw new Error('User not have permition');
+    }
+
+    const local = await localsRepository.create({
       city,
       state,
       name,
@@ -74,11 +65,9 @@ class CreateLocalService {
       rootOrNutella,
       status,
       link,
-      user,
+      user: findUser as User,
       showName,
     });
-
-    await localsRepository.save(local);
 
     return local;
   }

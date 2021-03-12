@@ -1,10 +1,10 @@
-import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 
 import authConfig from '@config/auth';
 
 import User from '@modules/users/infra/typeorm/entities/User';
+import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 
 interface Request {
   email: string;
@@ -18,13 +18,9 @@ interface Response {
 
 class AuthenticateAdminService {
   public async execute({ email, password }: Request): Promise<Response> {
-    const usersRepository = getRepository(User);
+    const usersRepository = new UsersRepository();
 
-    const admin = await usersRepository.findOne({
-      where: {
-        email,
-      },
-    });
+    const admin = await usersRepository.findByEmail(email);
 
     if (!admin) {
       throw new Error('Incorrect email/password combination');

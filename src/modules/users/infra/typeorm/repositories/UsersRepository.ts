@@ -11,7 +11,7 @@ import User from '../entities/User';
 class UsersRepository implements IUsersRepository {
   private ormRepository: Repository<User>;
 
-  cosntructor() {
+  constructor() {
     this.ormRepository = getRepository(User);
   }
 
