@@ -1,12 +1,12 @@
-import { getRepository } from 'typeorm';
 import path from 'path';
 import fs from 'fs';
 
 import uploadConfig from '@config/upload';
 
-import Locals from '@modules/locals/infra/typeorm/entities/Local';
-import User from '@modules/users/infra/typeorm/entities/User';
 import Picture from '@modules/locals/infra/typeorm/entities/Pictures';
+import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+import LocalsRepository from '../infra/typeorm/repositories/LocalsRepository';
+import PicturesRepository from '../infra/typeorm/repositories/PicturesRepository';
 
 interface Request {
   localId: string;
@@ -20,19 +20,19 @@ class UpdatePicturesLocalsService {
     userId,
     pictureFilename,
   }: Request): Promise<Picture> {
-    const userRepository = getRepository(User);
+    const userRepository = new UsersRepository();
 
-    const localRepoisitory = getRepository(Locals);
+    const localRepoisitory = new LocalsRepository();
 
-    const pictureRepository = getRepository(Picture);
+    const pictureRepository = new PicturesRepository();
 
-    const validUser = await userRepository.findOne(userId);
+    const validUser = await userRepository.findById(userId);
 
     if (!validUser) {
       throw new Error('Only autenhicated user can change Locals Pictures');
     }
 
-    const local = await localRepoisitory.findOne(localId);
+    const local = await localRepoisitory.findById(localId);
 
     if (!local) {
       throw new Error('Invalid local');
@@ -43,31 +43,25 @@ class UpdatePicturesLocalsService {
         'User need be owner this local or admin to change pictures',
       );
     }
-    const localPictures = await pictureRepository.find({
-      where: {
-        local: local.id,
-      },
-    });
+    const localPictures = await pictureRepository.findAllPicturesToCurrentLocal(
+      local.id,
+    );
 
-    if (localPictures.length > 6) {
-      const localPictureFilePath = path.join(
-        uploadConfig.directory,
-        localPictures[5].name,
-      );
-      const pictureFileExists = await fs.promises.stat(localPictureFilePath);
+    if (localPictures) {
+      if (localPictures?.length > 6) {
+        const localPictureFilePath = path.join(
+          uploadConfig.directory,
+          localPictures[5].name,
+        );
+        const pictureFileExists = await fs.promises.stat(localPictureFilePath);
 
-      if (pictureFileExists) {
-        await fs.promises.unlink(localPictureFilePath);
+        if (pictureFileExists) {
+          await fs.promises.unlink(localPictureFilePath);
+        }
       }
     }
 
-    const picture = pictureRepository.create({
-      name: pictureFilename,
-      local,
-    });
-
-    await pictureRepository.save(picture);
-
+    const picture = await pictureRepository.create(pictureFilename, local.id);
     return picture;
   }
 }

@@ -9,7 +9,7 @@ import {
 import Local from './Local';
 
 @Entity('pictures')
-class Picture {
+class Pictures {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,4 +29,4 @@ class Picture {
   updated_at: Date;
 }
 
-export default Picture;
+export default Pictures;

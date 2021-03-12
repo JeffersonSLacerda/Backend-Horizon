@@ -4,7 +4,5 @@ export default interface ICreateOperationsDTO {
   openTime?: number;
   closeTime?: number;
   price?: number;
-  isAllDay?: boolean;
   localId: string;
-  userId: string;
 }
