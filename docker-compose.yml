@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    command: yarn dev:server
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:user/app
+    links:
+      - postgres
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432

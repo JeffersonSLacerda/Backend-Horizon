@@ -30,7 +30,7 @@ sessionsRouter.post('/', async (request, response) => {
         type: user.profile.type,
       },
     };
-
+    response.set('Access-Control-Allow-Origin', '*');
     return response.json({ userWithoutPassword, token });
   } catch (err) {
     return response.status(400).json({ error: err.message });
