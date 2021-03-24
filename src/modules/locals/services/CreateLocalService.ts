@@ -1,9 +1,11 @@
 /* eslint-disable function-paren-newline */
 /* eslint-disable implicit-arrow-linebreak */
+import { inject, injectable } from 'tsyringe';
+
 import User from '@modules/users/infra/typeorm/entities/User';
-import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import Locals from '../infra/typeorm/entities/Local';
-import LocalsRepository from '../infra/typeorm/repositories/LocalsRepository';
+import ILocalsRepository from '../repositories/ILocalsRepository';
 
 interface Request {
   city: string;
@@ -20,7 +22,15 @@ interface Request {
   showName: boolean;
 }
 
+@injectable()
 class CreateLocalService {
+  constructor(
+    @inject('LocalsRepository')
+    private localsRepository: ILocalsRepository,
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+
   public async execute({
     city,
     state,
@@ -35,16 +45,13 @@ class CreateLocalService {
     userId,
     showName,
   }: Request): Promise<Locals> {
-    const localsRepository = new LocalsRepository();
-    const usersRepository = new UsersRepository();
-
-    const situation = await localsRepository.checkState(name);
+    const situation = await this.localsRepository.checkState(name);
 
     if (situation) {
       throw new Error(situation);
     }
 
-    const findUser = await usersRepository.findById(userId);
+    const findUser = await this.usersRepository.findById(userId);
 
     if (!findUser) {
       throw new Error('User not exist');
@@ -54,7 +61,7 @@ class CreateLocalService {
       throw new Error('User not have permition');
     }
 
-    const local = await localsRepository.create({
+    const local = await this.localsRepository.create({
       city,
       state,
       name,

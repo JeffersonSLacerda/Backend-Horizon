@@ -4,7 +4,6 @@
 import ITagsRespository from '@modules/locals/repositories/ITagsRepository';
 import { getRepository, Repository } from 'typeorm';
 import Tags from '../entities/Tags';
-import LocalsRepository from './LocalsRepository';
 
 class TagsRepository implements ITagsRespository {
   private ormRepository: Repository<Tags>;
@@ -13,27 +12,20 @@ class TagsRepository implements ITagsRespository {
     this.ormRepository = getRepository(Tags);
   }
 
-  public async create(tags: string[], localId: string): Promise<Tags[]> {
-    const localsRepository = new LocalsRepository();
-    const newTags: Tags[] = [];
-    tags.map(async tag => {
-      let hasTag = await this.ormRepository.findOne({ where: { name: tag } });
-      if (!hasTag) {
-        hasTag = this.ormRepository.create({ name: tag });
-        await this.ormRepository.save(hasTag);
-      }
-      newTags.push(hasTag);
-    });
+  public async create(name: string): Promise<Tags> {
+    const tag = this.ormRepository.create({ name });
 
-    const local = await localsRepository.findById(localId);
-    newTags.map(tag => {
-      if (local) {
-        local.tags = [tag];
-      }
-      return newTags;
-    });
+    await this.ormRepository.save(tag);
 
-    return newTags;
+    return tag;
+  }
+
+  public async findByName(name: string): Promise<Tags | undefined> {
+    return this.ormRepository.findOne({
+      where: {
+        name,
+      },
+    });
   }
 }
 

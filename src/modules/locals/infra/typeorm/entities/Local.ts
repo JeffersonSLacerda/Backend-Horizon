@@ -89,6 +89,9 @@ class Locals {
   @Column()
   link?: string;
 
+  @Column('numeric')
+  count?: number;
+
   @CreateDateColumn()
   created_at: Date;
 

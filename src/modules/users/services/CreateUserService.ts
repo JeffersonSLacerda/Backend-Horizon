@@ -9,7 +9,7 @@ interface Request {
   email: string;
   password: string;
   city: string;
-  state: string;
+  uf: string;
   profile: 'client' | 'admin';
   isAtivo: boolean;
 }
@@ -23,7 +23,7 @@ class CreateUserService {
     email,
     password,
     city,
-    state,
+    uf,
     profile,
     isAtivo,
   }: Request): Promise<User> {
@@ -41,7 +41,7 @@ class CreateUserService {
       email,
       password: hashedPassword,
       city,
-      state,
+      uf,
       profile,
       isAtivo,
     });

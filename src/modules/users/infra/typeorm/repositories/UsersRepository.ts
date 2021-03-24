@@ -55,7 +55,7 @@ class UsersRepository implements IUsersRepository {
     firstName,
     lastName,
     city,
-    state,
+    uf,
     email,
     password,
     isAtivo,
@@ -71,7 +71,7 @@ class UsersRepository implements IUsersRepository {
       email,
       password,
       city,
-      state,
+      uf,
       profile: createdProfile,
       isAtivo,
     });

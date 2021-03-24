@@ -1,14 +1,27 @@
 services:
-  web:
-    build: .
-    command: yarn dev:server
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:user/app
-    links:
-      - postgres
   postgres:
-    image: postgres
+    image: postgres:latest
+    container_name: horizon-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - 5432:5432
+      - '5432:5432'
+    volumes:
+      - horizon-postgres-data:data
+    networks:
+      - proxy
+  horizon-backend:
+    build: .
+    container_name: horizon-backend
+    depends_on:
+      - postgres
+    ports:
+      - "3333:3333"
+    volumes:
+      - .:/home/node/api
+      - /home/node/api/node_modules
+    networks:
+      - proxy
+volumes:
+  horizon-postgres-data:

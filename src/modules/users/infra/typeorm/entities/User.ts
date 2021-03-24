@@ -33,7 +33,7 @@ class User {
   city: string;
 
   @Column()
-  state: string;
+  uf: string;
 
   @OneToMany(() => Locals, local => local.user)
   locals: Locals[];

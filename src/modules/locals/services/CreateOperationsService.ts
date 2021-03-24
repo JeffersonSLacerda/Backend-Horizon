@@ -1,7 +1,7 @@
 import { startOfDay, endOfDay, getHours } from 'date-fns';
+import { inject, injectable } from 'tsyringe';
 
-import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
-import OperationsRepository from '../infra/typeorm/repositories/OperationsRepository';
+import IOperationsRepository from '../repositories/IOperationsRepository';
 
 interface Request {
   day: 'sun' | 'mon' | 'tue' | 'wen' | 'thu' | 'fri' | 'sat';
@@ -10,10 +10,15 @@ interface Request {
   price?: number;
   isAllDay?: boolean;
   localId: string;
-  userId: string;
 }
 
+@injectable()
 class CreateOperationsService {
+  constructor(
+    @inject('OperationsRepository')
+    private operationsRepository: IOperationsRepository,
+  ) {}
+
   public async execute({
     day,
     openTime,
@@ -21,17 +26,7 @@ class CreateOperationsService {
     price,
     isAllDay,
     localId,
-    userId,
   }: Request) {
-    const operationsRepository = new OperationsRepository();
-    const userRepository = new UsersRepository();
-
-    const validUser = await userRepository.findById(userId);
-
-    if (!validUser) {
-      throw new Error('Only autenhicated user can change Locals Pictures');
-    }
-
     if (isAllDay) {
       // eslint-disable-next-line no-param-reassign
       openTime = getHours(startOfDay(new Date())) as number;
@@ -39,7 +34,7 @@ class CreateOperationsService {
       closeTime = getHours(endOfDay(new Date())) as number;
     }
 
-    const operation = await operationsRepository.create({
+    const operation = await this.operationsRepository.create({
       day,
       openTime,
       closeTime,
