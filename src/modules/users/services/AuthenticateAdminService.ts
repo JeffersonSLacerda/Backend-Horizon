@@ -1,10 +1,11 @@
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { injectable, inject } from 'tsyringe';
 
 import authConfig from '@config/auth';
 
 import User from '@modules/users/infra/typeorm/entities/User';
-import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
+import IUsersRepository from '../repositories/IUsersRepository';
 
 interface Request {
   email: string;
@@ -16,11 +17,15 @@ interface Response {
   token: string;
 }
 
+@injectable()
 class AuthenticateAdminService {
-  public async execute({ email, password }: Request): Promise<Response> {
-    const usersRepository = new UsersRepository();
+  constructor(
+    @inject('UserRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
 
-    const admin = await usersRepository.findByEmail(email);
+  public async execute({ email, password }: Request): Promise<Response> {
+    const admin = await this.usersRepository.findByEmail(email);
 
     if (!admin) {
       throw new Error('Incorrect email/password combination');

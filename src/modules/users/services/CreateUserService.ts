@@ -1,5 +1,6 @@
-import { hash } from 'bcryptjs';
+import { inject, injectable } from 'tsyringe';
 
+import IHashProivider from '@modules/users/providers/HashProvider/models/IHashProivider';
 import User from '../infra/typeorm/entities/User';
 import IUsersRepository from '../repositories/IUsersRepository';
 
@@ -14,8 +15,15 @@ interface Request {
   isAtivo: boolean;
 }
 
+@injectable()
 class CreateUserService {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProivider,
+  ) {}
 
   public async execute({
     firstName,
@@ -29,7 +37,7 @@ class CreateUserService {
   }: Request): Promise<User> {
     const checkUserExist = await this.usersRepository.findByEmail(email);
 
-    const hashedPassword = await hash(password, 8);
+    const hashedPassword = await this.hashProvider.generateHash(password);
 
     if (checkUserExist) {
       throw new Error('Email adrress alredy user');

@@ -1,5 +1,8 @@
 import { container } from 'tsyringe';
 
+import '@modules/users/providers';
+import './providers';
+
 import ILocalsRepository from '@modules/locals/repositories/ILocalsRepository';
 import LocalsRepository from '@modules/locals/infra/typeorm/repositories/LocalsRepository';
 
@@ -18,13 +21,16 @@ import TagsRepository from '@modules/locals/infra/typeorm/repositories/TagsRepos
 import IPicturesRepository from '@modules/locals/repositories/IPicturesRepository';
 import PicturesRepository from '@modules/locals/infra/typeorm/repositories/PicturesRepository';
 
+import IUserTokensRepository from '@modules/users/repositories/IUserTokensRepository';
+import UserTokensRepository from '@modules/users/infra/typeorm/repositories/UserTokensRepository';
+
 container.registerSingleton<ILocalsRepository>(
   'LocalsRepository',
   LocalsRepository,
 );
 
 container.registerSingleton<IUsersRepository>(
-  'UsersRespository',
+  'UsersRepository',
   UsersRepository,
 );
 
@@ -43,4 +49,9 @@ container.registerSingleton<ITagsRepository>('TagsRepository', TagsRepository);
 container.registerSingleton<IPicturesRepository>(
   'PicturesRepository',
   PicturesRepository,
+);
+
+container.registerSingleton<IUserTokensRepository>(
+  'UserTokensRepository',
+  UserTokensRepository,
 );

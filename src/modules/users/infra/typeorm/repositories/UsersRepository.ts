@@ -29,6 +29,14 @@ class UsersRepository implements IUsersRepository {
     return findUser;
   }
 
+  public async findByName(name: string): Promise<User[] | undefined> {
+    const findUser = await this.ormRepository.find({
+      where: { name },
+    });
+
+    return findUser;
+  }
+
   public async findAllAndOrderByCreate(): Promise<User[] | undefined> {
     const findUsers = await this.ormRepository.find({
       order: { created_at: 'DESC' },
@@ -83,6 +91,16 @@ class UsersRepository implements IUsersRepository {
 
   public async save(user: User): Promise<User> {
     return this.ormRepository.save(user);
+  }
+
+  public async deactivate(id: string): Promise<void> {
+    const user = await this.ormRepository.findOne(id);
+
+    if (user) {
+      user.isAtivo = false;
+    }
+
+    await this.ormRepository.save(user as User);
   }
 }
 

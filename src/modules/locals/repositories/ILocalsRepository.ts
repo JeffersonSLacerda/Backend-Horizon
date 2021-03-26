@@ -5,6 +5,7 @@ import ICreateLocalDTO from '../dtos/ICreateLocalDTO';
 export default interface ILocalsRepository {
   findById(id: string): Promise<Locals | undefined>;
   findByCity(city: string): Promise<Locals[] | undefined>;
+  findByName(name: string): Promise<Locals[] | undefined>;
   findAllAndOrderByCreate(): Promise<Locals[] | undefined>;
   findAllCreatedToday(): Promise<Locals[] | undefined>;
   findMostPopularLocals(): Promise<Locals[] | undefined>;

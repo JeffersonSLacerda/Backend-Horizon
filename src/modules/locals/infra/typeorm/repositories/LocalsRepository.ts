@@ -25,6 +25,12 @@ class LocalsRepository implements ILocalsRepository {
     return local;
   }
 
+  public async findByName(name: string): Promise<Locals[] | undefined> {
+    const local = await this.ormRepository.find({ where: { name } });
+
+    return local;
+  }
+
   public async findAllAndOrderByCreate(): Promise<Locals[] | undefined> {
     const findLocals = await this.ormRepository.find({
       order: { created_at: 'DESC' },

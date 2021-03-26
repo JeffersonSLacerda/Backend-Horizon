@@ -1,10 +1,10 @@
-import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
 import authConfig from '@config/auth';
 
 import User from '@modules/users/infra/typeorm/entities/User';
+import IHashProivider from '@modules/users/providers/HashProvider/models/IHashProivider';
 import IUsersRepository from '../repositories/IUsersRepository';
 
 interface Request {
@@ -22,6 +22,9 @@ class AuthenticateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProivider,
   ) {}
 
   public async execute({ email, password }: Request): Promise<Response> {
@@ -35,7 +38,10 @@ class AuthenticateUserService {
       throw new Error('Access denied. User not allowed.');
     }
 
-    const passwordMatched = await compare(password, user.password);
+    const passwordMatched = await this.hashProvider.compareHash(
+      password,
+      user.password,
+    );
 
     if (!passwordMatched) {
       throw new Error('Incorrect email/password combination');

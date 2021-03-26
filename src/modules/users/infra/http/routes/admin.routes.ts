@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import SearchLocalsByNameController from '@modules/locals/infra/http/controllers/SearchLocalsByNameController';
+import SearchUsersByNameController from '../controllers/SearchUsersByNameController';
 import AdminUsersController from '../controllers/AdminUsersController';
 import AdminLocalsController from '../controllers/AdminLocalsContoller';
 
@@ -9,6 +11,8 @@ const adminRouter = Router();
 
 const adminUsersController = new AdminUsersController();
 const adminLocalsController = new AdminLocalsController();
+const searchUsersByNameController = new SearchUsersByNameController();
+const searchLocalsByNameController = new SearchLocalsByNameController();
 
 adminRouter.use(ensureAuthenticated);
 
@@ -49,8 +53,16 @@ adminRouter.get('/users', adminUsersController.index);
 
 adminRouter.get('/users/today', adminUsersController.list);
 
+adminRouter.get('/users/search', searchUsersByNameController.list);
+
+adminRouter.delete('/users/:id', adminUsersController.update);
+
+adminRouter.delete('/users/:id', adminUsersController.delete);
+
 adminRouter.get('/locals', adminLocalsController.index);
 
 adminRouter.get('/locals/today', adminLocalsController.list);
+
+adminRouter.get('/locals/search', searchLocalsByNameController.list);
 
 export default adminRouter;
