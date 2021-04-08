@@ -43,4 +43,6 @@ localsRouter.patch(
   rateController.create,
 );
 
+localsRouter.put('/:localId', enshureAuthenticated, localsController.update);
+
 export default localsRouter;

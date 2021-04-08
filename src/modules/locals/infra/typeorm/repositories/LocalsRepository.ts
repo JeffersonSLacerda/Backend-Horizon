@@ -1,5 +1,5 @@
 /* eslint-disable arrow-parens */
-import { getRepository, Repository } from 'typeorm';
+import { DeleteResult, getRepository, Repository } from 'typeorm';
 import { isSameDay } from 'date-fns';
 
 import ILocalsRepository from '@modules/locals/repositories/ILocalsRepository';
@@ -61,6 +61,16 @@ class LocalsRepository implements ILocalsRepository {
     return findLocals;
   }
 
+  public async getRootOrNutellaLocals(
+    root: boolean,
+  ): Promise<Locals[] | undefined> {
+    const findLocals = root
+      ? await this.ormRepository.find({ where: { rootOrNutella: true } })
+      : await this.ormRepository.find({ where: { rootOrNutella: false } });
+
+    return findLocals;
+  }
+
   public async checkState(name: string): Promise<string | undefined> {
     const local = await this.ormRepository.findOne({ where: { name } });
 
@@ -107,6 +117,10 @@ class LocalsRepository implements ILocalsRepository {
 
   public async save(local: Locals): Promise<Locals> {
     return this.ormRepository.save(local);
+  }
+
+  public async delete(local: Locals): Promise<DeleteResult> {
+    return this.ormRepository.delete(local);
   }
 }
 

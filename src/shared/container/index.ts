@@ -24,6 +24,9 @@ import PicturesRepository from '@modules/locals/infra/typeorm/repositories/Pictu
 import IUserTokensRepository from '@modules/users/repositories/IUserTokensRepository';
 import UserTokensRepository from '@modules/users/infra/typeorm/repositories/UserTokensRepository';
 
+import IMessagesRepository from '@modules/users/repositories/IMessagesRepository';
+import MessagesRepository from '@modules/users/infra/typeorm/repositories/MessagesRepository';
+
 container.registerSingleton<ILocalsRepository>(
   'LocalsRepository',
   LocalsRepository,
@@ -54,4 +57,9 @@ container.registerSingleton<IPicturesRepository>(
 container.registerSingleton<IUserTokensRepository>(
   'UserTokensRepository',
   UserTokensRepository,
+);
+
+container.registerSingleton<IMessagesRepository>(
+  'MessagesRepository',
+  MessagesRepository,
 );
