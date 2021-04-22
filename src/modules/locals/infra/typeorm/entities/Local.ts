@@ -17,8 +17,6 @@ import Operations from './Operations';
 import Picture from './Pictures';
 import Tags from './Tags';
 
-type status = 'ok' | 'waiting' | 'refused';
-
 @Entity('locals')
 class Locals {
   @PrimaryGeneratedColumn('uuid')
@@ -84,7 +82,7 @@ class Locals {
   operations: Operations[];
 
   @Column()
-  status: status;
+  status: string;
 
   @Column()
   link?: string;

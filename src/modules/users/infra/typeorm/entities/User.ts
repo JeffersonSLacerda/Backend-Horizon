@@ -1,3 +1,5 @@
+import { Exclude } from 'class-transformer';
+
 import Locals from '@modules/locals/infra/typeorm/entities/Local';
 import {
   Entity,
@@ -27,6 +29,7 @@ class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()

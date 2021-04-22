@@ -2,6 +2,7 @@ import { container } from 'tsyringe';
 
 import IStorageProvider from './SttorageProvider/models/IStorageProvider';
 import DiskStorageProvider from './SttorageProvider/implementations/DiskStorageProvider';
+import S3StorageProvider from './SttorageProvider/implementations/S3StorageProvider';
 
 import IMailProvider from './MailPorvider/models/IMailProvider';
 import EtherealMailProvider from './MailPorvider/implementations/EtherealMailProvider';
